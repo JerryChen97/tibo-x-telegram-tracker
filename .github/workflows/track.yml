@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "3/5 * * * *"
   workflow_dispatch:
+    inputs:
+      send_test_message:
+        description: "Send a Telegram test message without polling RSS"
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: tibo-rss-tracker
@@ -26,6 +32,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SEND_TEST_MESSAGE: ${{ inputs.send_test_message || false }}
         run: python tracker.py
       - name: Commit state if changed
         if: always()

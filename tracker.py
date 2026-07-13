@@ -221,6 +221,10 @@ def run() -> int:
     token, chat_id = os.environ.get("TELEGRAM_BOT_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
     if not token or not chat_id:
         raise RuntimeError("TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID must be set")
+    if os.environ.get("SEND_TEST_MESSAGE", "false").lower() == "true":
+        telegram_call(token, "sendMessage", {"chat_id": chat_id, "text": "🧪 Tibo Tracker 测试消息\nTelegram delivery is working."})
+        print("Sent Telegram test message")
+        return 0
     try:
         instance, posts = fetch_feed(config["rss_instances"], state.get("last_good_instance"), config.get("request_timeout_seconds", 9))
     except Exception as exc:
