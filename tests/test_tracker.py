@@ -1,6 +1,8 @@
 import json
 from datetime import datetime, timedelta, timezone
+from io import BytesIO
 from pathlib import Path
+from urllib.error import HTTPError
 
 import pytest
 
@@ -67,6 +69,18 @@ def test_telegram_markup_and_safe_unicode_truncation():
     msg = tracker.format_message(p)
     assert "&lt;" not in msg and "x.com/thsottiaux/status/1002" in msg
     assert len(msg) < 4100
+
+
+def test_telegram_http_error_includes_api_description(monkeypatch):
+    error = HTTPError("https://api.telegram.org/botTOKEN/sendMessage", 400, "Bad Request", {},
+                      BytesIO(b'{"ok":false,"description":"Bad Request: chat not found"}'))
+
+    def fail(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr(tracker, "urlopen", fail)
+    with pytest.raises(RuntimeError, match="HTTP 400: Bad Request: chat not found"):
+        tracker.telegram_call("TOKEN", "sendMessage", {"chat_id": "CHAT"})
 
 
 def test_daily_summary_uses_toronto_date_and_lists_matching_posts():

@@ -212,10 +212,25 @@ def telegram_call(token: str, method: str, payload: dict[str, Any], timeout: int
     body = json.dumps(payload, ensure_ascii=False).encode()
     request = Request(f"https://api.telegram.org/bot{token}/{method}", data=body,
                       headers={"Content-Type": "application/json"}, method="POST")
-    with urlopen(request, timeout=timeout) as response:
-        result = json.loads(response.read())
+    try:
+        with urlopen(request, timeout=timeout) as response:
+            result = json.loads(response.read())
+    except HTTPError as exc:
+        # Telegram returns useful JSON (for example, malformed HTML or an
+        # invalid image URL) together with HTTP 400.  urllib raises before
+        # the normal response path, so preserve that diagnostic without
+        # logging the bot URL, token, or request payload.
+        try:
+            error_result = json.loads(exc.read())
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            error_result = {}
+        description = error_result.get("description") if isinstance(error_result, dict) else None
+        detail = f": {description}" if description else ""
+        raise RuntimeError(f"Telegram request {method} failed with HTTP {exc.code}{detail}") from exc
     if not result.get("ok"):
-        raise RuntimeError(f"Telegram rejected {method}")
+        description = result.get("description")
+        detail = f": {description}" if description else ""
+        raise RuntimeError(f"Telegram rejected {method}{detail}")
     return result
 
 
