@@ -26,6 +26,14 @@ gh run list --workflow track.yml --limit 5
 gh run watch RUN_ID
 ```
 
+To request a daily count/list from the currently visible RSS history, even if those posts were never notified, use the manual workflow input. Dates are interpreted in Toronto time:
+
+```powershell
+gh workflow run track.yml -f daily_sum_date=2026-07-11
+```
+
+The workflow sends a Telegram message containing the count and canonical links for matching posts. RSS feeds expose only a limited recent window, so very old dates may correctly return zero when no longer present in the configured feeds. The same operation can be run locally with ` $env:DAILY_SUM_DATE="2026-07-11"; python tracker.py` after setting the two Telegram environment variables.
+
 Enter secret values only at the interactive prompts. Never put them in PowerShell history, `.env`, source, or logs. The workflow needs only `contents: write` and uses the built-in `GITHUB_TOKEN` to commit `state.json`.
 
 To test locally:

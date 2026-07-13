@@ -10,6 +10,11 @@ on:
         required: false
         default: false
         type: boolean
+      daily_sum_date:
+        description: "Send a daily post count for YYYY-MM-DD (Toronto time)"
+        required: false
+        default: ""
+        type: string
 
 concurrency:
   group: tibo-rss-tracker
@@ -33,6 +38,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           SEND_TEST_MESSAGE: ${{ inputs.send_test_message || false }}
+          DAILY_SUM_DATE: ${{ inputs.daily_sum_date || '' }}
         run: python tracker.py
       - name: Commit state if changed
         if: always()

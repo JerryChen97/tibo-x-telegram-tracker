@@ -8,6 +8,7 @@ import re
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any, Callable
 from urllib.error import HTTPError, URLError
@@ -182,6 +183,31 @@ def format_message(post: Post, username: str = "thsottiaux", now: datetime | Non
             f'<a href="{post.link}">在 X 查看原帖</a>')
 
 
+def post_toronto_date(post: Post) -> str | None:
+    if not post.published:
+        return None
+    try:
+        value = parsedate_to_datetime(post.published)
+    except (TypeError, ValueError, IndexError):
+        try:
+            value = datetime.fromisoformat(post.published.replace("Z", "+00:00"))
+        except ValueError:
+            return None
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    from zoneinfo import ZoneInfo
+    return value.astimezone(ZoneInfo("America/Toronto")).date().isoformat()
+
+
+def daily_summary_message(posts: list[Post], date: str, username: str = "thsottiaux") -> str:
+    matching = [p for p in posts if post_toronto_date(p) == date]
+    lines = [f"📊 Tibo 每日发帖统计", f"@{escape_telegram(username)} · {date} (Toronto)", "", f"共 {len(matching)} 条帖子"]
+    for post in matching:
+        title = truncate_unicode(post.text.replace("\n", " "), 180) or "(无文字内容)"
+        lines.append(f'• <a href="{post.link}">{escape_telegram(title)}</a>')
+    return "\n".join(lines)
+
+
 def telegram_call(token: str, method: str, payload: dict[str, Any], timeout: int = 15) -> dict[str, Any]:
     body = json.dumps(payload, ensure_ascii=False).encode()
     request = Request(f"https://api.telegram.org/bot{token}/{method}", data=body,
@@ -221,6 +247,16 @@ def run() -> int:
     token, chat_id = os.environ.get("TELEGRAM_BOT_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
     if not token or not chat_id:
         raise RuntimeError("TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID must be set")
+    daily_date = os.environ.get("DAILY_SUM_DATE", "").strip()
+    if daily_date:
+        try:
+            datetime.strptime(daily_date, "%Y-%m-%d")
+        except ValueError as exc:
+            raise RuntimeError("DAILY_SUM_DATE must be YYYY-MM-DD") from exc
+        _, daily_posts = fetch_feed(config["rss_instances"], None, config.get("request_timeout_seconds", 9))
+        telegram_call(token, "sendMessage", {"chat_id": chat_id, "text": daily_summary_message(daily_posts, daily_date, config["username"]), "parse_mode": "HTML"})
+        print(f"Sent daily summary for {daily_date}")
+        return 0
     if os.environ.get("SEND_TEST_MESSAGE", "false").lower() == "true":
         telegram_call(token, "sendMessage", {"chat_id": chat_id, "text": "🧪 Tibo Tracker 测试消息\nTelegram delivery is working."})
         print("Sent Telegram test message")

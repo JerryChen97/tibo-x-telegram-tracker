@@ -69,6 +69,12 @@ def test_telegram_markup_and_safe_unicode_truncation():
     assert len(msg) < 4100
 
 
+def test_daily_summary_uses_toronto_date_and_lists_matching_posts():
+    summary = tracker.daily_summary_message(posts(), "2024-01-02")
+    assert "共 5 条帖子" in summary
+    assert "x.com/thsottiaux/status/1004" in summary
+
+
 def test_initial_baseline_does_not_replay(monkeypatch, tmp_path, capsys):
     state_path = tmp_path / "state.json"; monkeypatch.setattr(tracker, "STATE_PATH", state_path)
     monkeypatch.setattr(tracker, "load_config", lambda: {"username":"thsottiaux","rss_instances":["good"],"failure_threshold":3,"failure_notice_cooldown_hours":6,"request_timeout_seconds":9})
