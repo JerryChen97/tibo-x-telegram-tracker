@@ -1,0 +1,28 @@
+name: Repository heartbeat
+
+on:
+  schedule:
+    - cron: "17 4 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with: {fetch-depth: 0}
+      - name: Heartbeat only after prolonged inactivity
+        shell: bash
+        run: |
+          last=$(git log -1 --format=%ct)
+          now=$(date +%s)
+          if [ $((now-last)) -lt $((45*24*60*60)) ]; then exit 0; fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          date -u +%Y-%m-%d > .github/last-heartbeat
+          git add .github/last-heartbeat
+          git commit -m "Maintain repository activity"
+          git push

@@ -1,0 +1,39 @@
+name: Tibo RSS tracker
+
+on:
+  schedule:
+    - cron: "3/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: tibo-rss-tracker
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  track:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v5.6.0
+        with: {python-version: "3.12"}
+      - name: Install dependencies
+        run: python -m pip install --requirement requirements.txt
+      - name: Poll RSS and Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python tracker.py
+      - name: Commit state if changed
+        if: always()
+        run: |
+          git diff --quiet state.json && exit 0 || true
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add state.json
+          git commit -m "Update Tibo tracker state"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

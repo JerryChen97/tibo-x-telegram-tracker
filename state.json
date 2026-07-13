@@ -1,0 +1,8 @@
+{
+  "initialized": false,
+  "recent_post_ids": [],
+  "last_good_instance": null,
+  "consecutive_feed_failures": 0,
+  "feed_unhealthy": false,
+  "last_failure_notice_at": null
+}

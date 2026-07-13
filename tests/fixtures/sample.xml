@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel>
+<item><title><![CDATA[Normal &amp; update]]></title><description><![CDATA[<p>Hello 😀 &amp; world<br>line two<img src="https://cdn.example/a.jpg"></p>]]></description><guid>https://nitter.net/thsottiaux/status/1002</guid><pubDate>Tue, 02 Jan 2024 12:00:02 GMT</pubDate></item>
+<item><title>Quote post</title><content:encoded><![CDATA[<p>Quoted text</p><img src="https://cdn.example/a.jpg"><img src="https://cdn.example/b.jpg">]]></content:encoded><link>https://nitter.net/thsottiaux/status/1003</link><pubDate>Tue, 02 Jan 2024 12:00:03 GMT</pubDate></item>
+<item><title>RT @someone: repost</title><description>retweeted by Tibo</description><guid>https://nitter.net/thsottiaux/status/1001</guid><pubDate>Tue, 02 Jan 2024 12:00:01 GMT</pubDate></item>
+<item><title>Replying to @someone</title><description>reply text</description><guid>https://nitter.net/thsottiaux/status/1000</guid><pubDate>Tue, 02 Jan 2024 12:00:00 GMT</pubDate></item>
+<item><title>Important announcement</title><description>Could be anything</description><guid>https://nitter.net/thsottiaux/status/1004</guid><pubDate>Tue, 02 Jan 2024 12:00:04 GMT</pubDate></item>
+</channel></rss>

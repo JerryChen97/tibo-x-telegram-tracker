@@ -1,0 +1,11 @@
+{
+  "username": "thsottiaux",
+  "rss_instances": [
+    "https://nitter.net",
+    "https://xcancel.com"
+  ],
+  "failure_threshold": 3,
+  "failure_notice_cooldown_hours": 6,
+  "max_recent_ids": 200,
+  "request_timeout_seconds": 9
+}
