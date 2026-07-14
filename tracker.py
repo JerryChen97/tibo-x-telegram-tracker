@@ -22,6 +22,7 @@ CONFIG_PATH = ROOT / "config.json"
 USER_AGENT = "TiboRSSGitHubAction/1.0 (+https://github.com/)"
 ID_RE = re.compile(r"/status/(\d+)")
 IMG_RE = re.compile(r"<img\b[^>]*?\bsrc\s*=\s*[\"']([^\"']+)", re.I)
+TELEGRAM_PHOTO_CAPTION_LIMIT = 800
 
 
 @dataclass
@@ -250,7 +251,9 @@ def telegram_call(token: str, method: str, payload: dict[str, Any], timeout: int
 
 
 def deliver(post: Post, token: str, chat_id: str, username: str) -> None:
-    caption = format_message(post, username, limit=1024 if post.images else 4096)
+    # Keep a safety margin below Telegram's 1024-character photo-caption limit.
+    caption = format_message(post, username,
+                             limit=TELEGRAM_PHOTO_CAPTION_LIMIT if post.images else 4096)
     if len(post.images) == 1:
         telegram_call(token, "sendPhoto", {"chat_id": chat_id, "photo": post.images[0], "caption": caption, "parse_mode": "HTML"})
     elif len(post.images) > 1:
