@@ -79,7 +79,7 @@ def test_photo_caption_respects_telegram_limit(monkeypatch):
 
     tracker.deliver(post, "TOKEN", "CHAT", "thsottiaux")
 
-    assert len(sent[0]["caption"]) <= 1024
+    assert len(sent[0]["caption"]) <= tracker.TELEGRAM_PHOTO_CAPTION_LIMIT
     assert sent[0]["caption"].endswith('在 X 查看原帖</a>')
 
 
