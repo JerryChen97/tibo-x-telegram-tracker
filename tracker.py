@@ -173,14 +173,29 @@ def truncate_unicode(value: str, limit: int = 3800) -> str:
     return value if len(value) <= limit else value[:limit - 1] + "…"
 
 
-def format_message(post: Post, username: str = "thsottiaux", now: datetime | None = None) -> str:
+def telegram_text(value: str, limit: int) -> str:
+    """Truncate raw text while keeping the escaped Telegram text within limit."""
+    if len(escape_telegram(value)) <= limit:
+        return escape_telegram(value)
+    low, high = 0, len(value)
+    while low < high:
+        middle = (low + high + 1) // 2
+        if len(escape_telegram(truncate_unicode(value, middle))) <= limit:
+            low = middle
+        else:
+            high = middle - 1
+    return escape_telegram(truncate_unicode(value, low))
+
+
+def format_message(post: Post, username: str = "thsottiaux", now: datetime | None = None,
+                   limit: int = 3800) -> str:
     local = (now or utc_now()).astimezone().strftime("%Y-%m-%d %H:%M")
     # The runner timezone is UTC; convert explicitly to Toronto without a third-party dependency.
     from zoneinfo import ZoneInfo
     local = (now or utc_now()).astimezone(ZoneInfo("America/Toronto")).strftime("%Y-%m-%d %H:%M")
-    return (f"🔔 Tibo 发布了新帖\n@{escape_telegram(username)} · {local}\n\n"
-            f"{escape_telegram(truncate_unicode(post.text))}\n\n"
-            f'<a href="{post.link}">在 X 查看原帖</a>')
+    prefix = f"🔔 Tibo 发布了新帖\n@{escape_telegram(username)} · {local}\n\n"
+    suffix = f'\n\n<a href="{post.link}">在 X 查看原帖</a>'
+    return prefix + telegram_text(post.text, max(0, limit - len(prefix) - len(suffix))) + suffix
 
 
 def post_toronto_date(post: Post) -> str | None:
@@ -235,7 +250,7 @@ def telegram_call(token: str, method: str, payload: dict[str, Any], timeout: int
 
 
 def deliver(post: Post, token: str, chat_id: str, username: str) -> None:
-    caption = format_message(post, username)
+    caption = format_message(post, username, limit=1024 if post.images else 4096)
     if len(post.images) == 1:
         telegram_call(token, "sendPhoto", {"chat_id": chat_id, "photo": post.images[0], "caption": caption, "parse_mode": "HTML"})
     elif len(post.images) > 1:

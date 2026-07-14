@@ -71,6 +71,18 @@ def test_telegram_markup_and_safe_unicode_truncation():
     assert len(msg) < 4100
 
 
+def test_photo_caption_respects_telegram_limit(monkeypatch):
+    post = posts()[0]
+    post.text = "<long> 😀" * 1000
+    sent = []
+    monkeypatch.setattr(tracker, "telegram_call", lambda token, method, payload, timeout=15: sent.append(payload))
+
+    tracker.deliver(post, "TOKEN", "CHAT", "thsottiaux")
+
+    assert len(sent[0]["caption"]) <= 1024
+    assert sent[0]["caption"].endswith('在 X 查看原帖</a>')
+
+
 def test_telegram_http_error_includes_api_description(monkeypatch):
     error = HTTPError("https://api.telegram.org/botTOKEN/sendMessage", 400, "Bad Request", {},
                       BytesIO(b'{"ok":false,"description":"Bad Request: chat not found"}'))
