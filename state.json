@@ -144,10 +144,12 @@
     "2089941380336644295",
     "2090116476414136830",
     "2090134827450421604",
-    "2090173536010957128"
+    "2090173536010957128",
+    "2090517433199247741",
+    "2090518287532916854"
   ],
   "last_good_instance": "https://nitter.net",
-  "consecutive_feed_failures": 17,
-  "feed_unhealthy": true,
+  "consecutive_feed_failures": 0,
+  "feed_unhealthy": false,
   "last_failure_notice_at": "2026-08-20T17:51:28.529472+00:00"
 }
