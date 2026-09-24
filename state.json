@@ -151,7 +151,7 @@
     "2090675027670978569"
   ],
   "last_good_instance": "https://nitter.net",
-  "consecutive_feed_failures": 3203,
+  "consecutive_feed_failures": 3204,
   "feed_unhealthy": true,
   "last_failure_notice_at": "2026-09-24T15:59:52.747996+00:00"
 }
