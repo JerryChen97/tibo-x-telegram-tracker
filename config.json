@@ -1,8 +1,9 @@
 {
   "username": "thsottiaux",
   "rss_instances": [
-    "https://nitter.net",
-    "https://xcancel.com"
+    "https://nitter.kareem.one",
+    "https://nitter.meowing.monster",
+    "https://shitter.thepixora.com"
   ],
   "failure_threshold": 3,
   "failure_notice_cooldown_hours": 6,

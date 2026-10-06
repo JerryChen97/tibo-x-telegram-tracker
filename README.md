@@ -8,7 +8,7 @@ The tracker runs on public GitHub-hosted runners every five minutes (`3/5 * * * 
 
 ## Architecture and state
 
-`track.yml` installs Python 3.12 and `feedparser`, then `tracker.py` tries the last successful Nitter-compatible instance first and the remaining configured instances sequentially. It requires an RSS/Atom response, rejects HTML challenges, uses a nine-second timeout, and stores the successful instance in `state.json`. Current validated candidates are `nitter.net` and `xcancel.com`; replace dead instances in `config.json`.
+`track.yml` installs Python 3.12 and `feedparser`, then `tracker.py` tries the last successful Nitter-compatible instance first and the remaining configured instances sequentially. It requires an RSS/Atom response, rejects HTML challenges, uses a nine-second timeout, and stores the successful instance in `state.json`. Current validated candidates (2026-10) are `nitter.kareem.one`, `nitter.meowing.monster`, and `shitter.thepixora.com`; healthy instances are listed at https://status.d420.de; replace dead instances in `config.json`.
 
 The committed JSON state retains the latest 200 delivered IDs. The first successful run baselines all visible items and sends one startup message without replaying history. A post ID is added only after Telegram confirms delivery. Posts are sorted oldest-first. If a later Telegram send fails, previous successful IDs remain saved and the failed/later posts are retried next run. The workflow uses `concurrency` and rebases before pushing so newer remote state is not silently overwritten; a true conflict fails for inspection.
 

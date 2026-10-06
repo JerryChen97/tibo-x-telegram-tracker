@@ -301,7 +301,7 @@ def run() -> int:
         if state["consecutive_feed_failures"] >= config["failure_threshold"] and should_notify_failure(state, now, config["failure_notice_cooldown_hours"]):
             telegram_call(token, "sendMessage", {"chat_id": chat_id, "text": "⚠️ Tibo Tracker 暂时无法读取 RSS\n所有配置的数据源当前均不可用，系统会继续自动重试。"})
             state["last_failure_notice_at"] = now.isoformat()
-        save_state(state); print("RSS unavailable; state preserved")
+        save_state(state); print(f"RSS unavailable; state preserved: {exc}")
         return 0
     was_unhealthy = state["feed_unhealthy"]; state.update(last_good_instance=instance, consecutive_feed_failures=0, feed_unhealthy=False)
     posts = sorted(posts, key=lambda p: (p.published, int(p.post_id)))

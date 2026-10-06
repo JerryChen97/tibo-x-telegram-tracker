@@ -1,5 +1,5 @@
 {
-  "initialized": true,
+  "initialized": false,
   "recent_post_ids": [
     "2075389936564588714",
     "2075452680760443190",
@@ -150,7 +150,7 @@
     "2090631723302469995",
     "2090675027670978569"
   ],
-  "last_good_instance": "https://nitter.net",
+  "last_good_instance": null,
   "consecutive_feed_failures": 3813,
   "feed_unhealthy": true,
   "last_failure_notice_at": "2026-10-06T15:06:09.261045+00:00"
