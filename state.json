@@ -94,9 +94,10 @@
     "2113492187770175603",
     "2113492502355562875",
     "2113770573994299544",
-    "2113770862860222611"
+    "2113770862860222611",
+    "2113838156193894447"
   ],
-  "last_good_instance": "https://nitter.kareem.one",
+  "last_good_instance": "https://nitter.meowing.monster",
   "consecutive_feed_failures": 0,
   "feed_unhealthy": false,
   "last_failure_notice_at": "2026-10-06T15:06:09.261045+00:00"
